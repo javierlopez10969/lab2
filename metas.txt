@@ -1,0 +1,60 @@
+LAB 02 EDA. Javier López Campos 6/02/2020
+*************
+DUDA: Cual es el objetivo de este laboratorio , aprender a usar estas estructuras de datos o ver cual algoritmo es mejor para la solución del problema. O ambas , debo implementar el algoritmo de menor orden y tiempo algoritmico , o debo implementar el que se me ocurra ?
+*********
+ENTRADA :
+Los datos de la sopa de letras serán entregados mediante un archivo de texto plano, cuyo nombre sera “sopa.in”, que contiene la sopa de letras de tamaño N x N.
+
+FUNCION:
+Encontrar subcadenas de distintas palabras en una sopa de letras. 
+
+Especificaciones y Estructura de Datos: 
+-Las palabras pueden o no estar escritas completas en la sopa de letras.
+
+-Además, pueden estar escritas de izquierda a derecha o de arriba hacia abajo.
+************************
+-Para abordar este problema, se deben buscar ​ todas las subcadenas sin repetir y almacenar en una lista simple o doblemente enlazada todas
+las que tengan un tamaño mayor o igual a 3.
+
+DUDA: Hay que guardar inmediatamente en una lista enlazada las subcadenas o se pueden guardar en un arreglo y despues trabasijarlo?
+Es mejor guardar todo inmediatamente en una lista enlazada las subcadenas , y a medida que uno encuentre subcadenas con un largo 
+determinardo irla insertandola en la lista enlazada según tamaño, ir ordenando la lista inmediatamente.
+***************************
+
+-Justifique su elección de listas
+
+-Luego, se deben ordenar los substring de menor a mayor similitud. Esta similitud se define como el largo del substring correspondiente.
+
+-El orden de las subcadenas del mismo tamaño debe ser en orden alfabético.
+
+SALIDA :
+Las palabras a buscar se entregarán en otro archivo de texto llamado “palabras.in”.
+
+Ideas:
+1.-Guardar cada palabra para buscar en una lista enlazada simple de estructuras.
+
+2.-Empezar a realizar la busqueda de cada subcadenas de cada palabra . 
+- Recorrer la lista de palabras mediante:
+
+Idea1 : Recursión de cola , porque se cree que puede usar menos tiempo algoritmico y carga de memoria.
+Idea2 : Iteración , es más fácil , y se conoce la técnica.
+
+
+4.-Empezamos recorrer la sopa de letras. 
+Cada letra de la sopa le pregunto si se encuentra dentro de la palabra.
+Funcion estaEnPalabra Recibe letra y palabra , y recorre la palabra comparando si se encuentra la letra indicada, devuelve un número de cuantas veces se encuentra dentro de la palabra.
+Despues se realiza una busqueda hasta que el número que devolvio en estae sea cero, y se 
+
+
+La busqueda recibirá la letra, la palabra , y el  indice de la letra dentro de la palabra
+
+-La sopa de letras se recorrera de forma :
+Hasta que llege a n
+Idea1 : Recursión de cola , porque se cree que puede usar menos tiempo algoritmico y carga de memoria.
+Idea2 : Iteración , es más fácil , y se conoce la técnica.
+
+5.-Una vez encontrada la letra. Se preguntará si es la letra inicial , la letra final, o una letra de valor central.
+
+
+
+-Guardar cada subcadena de mayor o igual a 3 en una lista enlazada. Despúes esta lista ordenadala segun largo de coincidencia.
