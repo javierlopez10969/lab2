@@ -43,7 +43,7 @@ Idea2 : Iteración , es más fácil , y se conoce la técnica.
 4.-Empezamos recorrer la sopa de letras. 
 Cada letra de la sopa le pregunto si se encuentra dentro de la palabra.
 Funcion estaEnPalabra Recibe letra y palabra , y recorre la palabra comparando si se encuentra la letra indicada, devuelve un número de cuantas veces se encuentra dentro de la palabra.
-Despues se realiza una busqueda hasta que el número que devolvio en estae sea cero, y se 
+Despues se realiza una busqueda hasta que el número que devolvio en estae sea cero, y se sigue recorriendo la lista
 
 
 La busqueda recibirá la letra, la palabra , y el  indice de la letra dentro de la palabra
@@ -55,6 +55,49 @@ Idea2 : Iteración , es más fácil , y se conoce la técnica.
 
 5.-Una vez encontrada la letra. Se preguntará si es la letra inicial , la letra final, o una letra de valor central.
 
+6.-Si se encuentra la palabra entera, se procederá a calcular la variación de todas las subcadenas dentro de una palabra.
 
+if Lsub=3 ,P = n - 2
+n = 3
+P = 1
+...
+
+n = 4
+..._
+_...
+
+n = 5
+...__
+_..._
+__...
+
+n =6
+...___
+_...__
+__..._
+___...
+
+if Lsub=4 , P = n-3
+n=4
+
+....
+
+n=5
+...._
+_....
+
+n=6
+....__
+_...._
+__....
+
+Lsub = n 
+P= n - (Lsub-1)
+
+................n
+
+7.-Si no se encuentra la palabra completa, de la cadena encontrada, se procederá a sacar todas las subcadenas dentro ella.
+
+8.-Una vez encontrada todas las subcadenas de cada palabra, se procederá a mostrará cadasubcadena de cada palabra por pantalla y se guardará en el archivo
 
 -Guardar cada subcadena de mayor o igual a 3 en una lista enlazada. Despúes esta lista ordenadala segun largo de coincidencia.
