@@ -62,7 +62,7 @@ void menu ()
             listaPalabras->cabeza = puntero;
             trabasijarArrregloToLista(arregloPalabra,listaPalabras,n2,0, puntero);
             puntero = listaPalabras->cabeza;
-            busqueda(sopa ,n1 ,listaPalabras,puntero);
+            busqueda(sopa ,n1 ,puntero);
 
             char nombreSalida [100] ;
             printf("\nIngrese el nombre de su Archivo de salida sin extension\n");

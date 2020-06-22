@@ -11,7 +11,8 @@ typedef struct Nodo
 	//Largo de la cadena
 	int largo;
 	//Siguiente elemento
-	struct Nodo * siguiente;	
+	struct Nodo * siguiente;
+	int complete;	
 } Nodo;
 
 typedef struct Lista
@@ -53,11 +54,12 @@ int estaEnListaEnlazada(Lista * lista , char * cadena);
 //Salida : Nodo
 Nodo * crearNodo(char * cadena)
 {
-	//Creo un nodo
-	Nodo * nodo =(Nodo*)malloc(sizeof (Nodo));
+	//Reservo espacio para el nodo
+	Nodo * nodo = 	malloc(sizeof (Nodo));
 	//Se copia la cadena en el nodo
 	strcpy(nodo->cadena,cadena);
 	nodo->largo=strlen(cadena);
+	nodo->complete = 0;
 	nodo->siguiente= NULL;
 	return nodo;
 }
@@ -78,7 +80,7 @@ void insertarAlInicio(Lista * lista ,char * cadena)
 	//Creamos un nodo a partir de la cadena dada
 	Nodo * nodo = crearNodo (cadena);
 	//Primero pregunto si la lista esta vacía
-	if (lista->cabeza == NULL)
+	if (lista->cabeza == NULL )
 	{
 		lista->cabeza = nodo ;
 		lista->largo = 1;
@@ -91,79 +93,6 @@ void insertarAlInicio(Lista * lista ,char * cadena)
 	}
 }
 
-//Función que agrega subcadenas según el orden que le corresponda
-void insertarSegunCorresponda(palabra * P, char * subcadena)
-{
-	//Antes pregunto si la subcadena no se encuentra dentro de la subcadena
-	if (estaEnListaEnlazada(P->subcadenas ,subcadena) ==1)
-	{
-		//Creo mi nuevo nodo a agregar
-		Nodo * nodo = crearNodo (subcadena);
-		printf("Palabra en nodo : %s\n", nodo->cadena);
-		printf("Largo de la palabra : %d\n", nodo->largo);
-		//Antes que nada pregunto si mi cabeza es nula
-		if (P->subcadenas->cabeza == NULL)
-		{
-			//Si es nula agrego el nodo al principio
-			nodo->siguiente = NULL; 
-			P->subcadenas->cabeza = nodo;
-			P->subcadenas->largo = 1;
-		}
-		//Caso de que no sea nula 
-		else if (P->subcadenas->cabeza != NULL)
-		{
-			//Inizializo un puntero con la cabeza de la lista
-			Nodo * puntero = P->subcadenas->cabeza;		
-			//Inicializo un iterador en 0
-			int i  = 0;
-			//Mientras el iterador sea menor al largo de la lista enlazada
-			while(i < P->subcadenas->largo)
-			{
-				//Pregunto si el largo de mi cadena es igual al largo del puntero actual
-				if (nodo->largo == puntero->largo)
-				{
-					//Pregunto si mi siguiente no es nulo
-					if (puntero->siguiente != NULL)
-					{
-						//Mi nuevo nodo apunta al siguiente del puntero 
-						nodo->siguiente = puntero->siguiente;
-						//Y ahora el puntero apunta al nuevo nodo agregado
-						puntero->siguiente = nodo;
-						//Aumento el largo de la lista
-						P->subcadenas->largo = P->subcadenas->largo + 1 ;
-						//Rompo la iteración
-						break ;
-					}
-					//En caso de que si sea nulo
-					if (puntero->siguiente == NULL)
-					{
-						puntero->siguiente = nodo;
-						P->subcadenas->largo = P->subcadenas->largo + 1 ;
-						break;
-					}
-
-				}
-				//En caso de no serlo sigo recorriendo
-				i++;
-				//Solo si el puntero siguiente existe
-				if (puntero->siguiente)
-				{
-					//Sigo avanzando en la lsita enlazada
-					puntero = puntero->siguiente ;
-				}
-				//En caso de que no exista
-				else
-				{
-					//Lo agrego al final de mi lista
-					puntero->siguiente = nodo;
-					P->subcadenas->largo = P->subcadenas->largo + 1 ;
-
-				}
-			}
-		}
-	}
-
-}
 
 //Selectores
 //Otras funciones
@@ -175,13 +104,8 @@ int estaEnListaEnlazada(Lista * lista , char * cadena)
 {
 	int i = 0;
 	Nodo * puntero =  lista->cabeza;
-	//Pregunto si las cadenas son coincidentes
-	if (strcmp(cadena,puntero->cadena)==0)
-	{
-		return 0;
-	}
 	//Mientras exista siguiente y el iterador sea menor al largo
-	while(i < lista->largo )
+	while(i < lista->largo)
 	{	
 		//Pregunto si los elementos son iguales
 		if (strcmp(cadena,puntero->cadena)==0)
@@ -197,7 +121,7 @@ int estaEnListaEnlazada(Lista * lista , char * cadena)
 			puntero = puntero->siguiente ;
 		}
 	}
-	//Si al final de todo no encontre un elemento coincidente devuelvo 0
+	//Si al final de todo no encontre un elemento coincidente devuelvo 1
 	return 1 ;
 }
 

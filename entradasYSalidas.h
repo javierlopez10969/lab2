@@ -4,7 +4,7 @@
 #include <stdbool.h>
 
 //Modulo de constantes , constante abecedario
-char * abcdario = "abcdefghijklmnopqrstuwvxyz";
+char  abcdario[26] = "abcdefghijklmnopqrstuwvxyz";
 
 //MODULO DE FUNCIONES
 
@@ -183,8 +183,10 @@ bool leerArchivoPalabra(palabra ** arreglo , char * nombre, int * n)
 //Función trasbasijar de un arreglo dinámico a una lista enlazada simple
 void trabasijarArrregloToLista(palabra * arreglo , listaP * P, int n, int i,palabra * puntero)
 {
+    //Le asigno memoria a la lista P
     P = (listaP*)malloc(sizeof (listaP));
     P->largo = n ;
+    //Lege al final de mi arreglo
     if (i == n)
     {
         //Asigno el nodo siguiente
@@ -210,6 +212,10 @@ void trabasijarArrregloToLista(palabra * arreglo , listaP * P, int n, int i,pala
         //printf("Largo  : %d\n",puntero->largoPalabra );
         //Asigno memoria a la lista de subcadenas
         puntero->subcadenas = (Lista*)malloc(sizeof (Lista));
+        //puntero->subcadenas =NULL;
+        //Al primer elemento de subcadnas le apunto a null
+        puntero->subcadenas->cabeza = malloc(sizeof (Nodo)); ;
+        puntero->subcadenas->cabeza->largo = -1;
         //Asigno el largo a subcadenas que parte en 0
         puntero->subcadenas->largo = 0;
         //Asigno memoria al siguiente elemento de mi lista
