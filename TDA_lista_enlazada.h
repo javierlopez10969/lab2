@@ -12,7 +12,8 @@ typedef struct Nodo
 	int largo;
 	//Siguiente elemento
 	struct Nodo * siguiente;
-	int complete;	
+	struct Nodo * anterior;
+	//int complete;	
 } Nodo;
 
 typedef struct Lista
@@ -46,6 +47,34 @@ typedef struct listaP
 
 //HEADER
 int estaEnListaEnlazada(Lista * lista , char * cadena);
+//Compara si el string 1 es mayor que ele string2
+
+//SAlida , 0 true , 1 false
+int mayorAlfabetico(char * string1 , int largo1 , char * string2, int largo2, int i )
+{
+    if (string1[i]>string2[i])
+    {
+        return 0 ;
+    }
+    //En cambio si es menor 
+    else if (string1[i] < string2[i])
+    {
+        return 1;
+    }
+    //Si es igual sigo recorriendo los caracteres
+    //Pero antes pregunto si el i no se pasa ningungo de los largos
+    else if (i+1<largo2 && i+1< largo2)
+    {
+        //Si no se pasa ninguno de los largos
+        //Llamada recursiva
+        mayorAlfabetico(string1,largo1,string2,largo2,i+1);
+    }
+    //Si se pasa en los largos, retorno 1
+    else
+    {
+        return 1;
+    }
+}
 
 
 //CONSTRUCTORES
@@ -59,7 +88,6 @@ Nodo * crearNodo(char * cadena)
 	//Se copia la cadena en el nodo
 	strcpy(nodo->cadena,cadena);
 	nodo->largo=strlen(cadena);
-	nodo->complete = 0;
 	nodo->siguiente= NULL;
 	return nodo;
 }
@@ -69,28 +97,176 @@ void borrarNodo(Nodo * nodo )
 {
 	free (nodo);
 }
-
-
 //MODIFICADORES
-//Función que inserta al inicio de la lista un nuevo elemento
-//Dominio : struct lista, cadena
-//Recorrido : struct lista
-void insertarAlInicio(Lista * lista ,char * cadena)
+//Función que se encarga de insertar 
+//Entrada  :
+void insertarAdelante (palabra * P ,char * string , Nodo * puntero)
 {
-	//Creamos un nodo a partir de la cadena dada
-	Nodo * nodo = crearNodo (cadena);
-	//Primero pregunto si la lista esta vacía
-	if (lista->cabeza == NULL )
+	//Creo un nuevo nodo
+	Nodo * nodo = crearNodo(string);
+	//printf("N: New Chain in my nodo : %s\n", nodo->cadena );
+	//Nodo apunta al siguiente del puntero actual
+	nodo->siguiente = puntero->siguiente;
+	//Si el siguiente de puntero no es nulo
+	if(puntero->siguiente)
 	{
-		lista->cabeza = nodo ;
-		lista->largo = 1;
+		//Si no es nulo
+		//El anterior del siguiente de nodo ahora es nodo
+		puntero->siguiente->anterior  = nodo;
+	}
+	//Puntero siguiente ahora es nodo
+	puntero->siguiente = nodo;
+	//Y anterior de nodo es puntero
+	nodo->anterior = puntero;
+	//Me muevo a nodo
+	puntero = puntero->siguiente ;
+	//printf("N :New Chain in my lista : %s\n", puntero->cadena );
+	//Aumento mi largo de lista enlazada
+	P->subcadenas->largo = P->subcadenas->largo + 1;
+	//Libero memoria
+	string=malloc(sizeof(char));
+	free(string);
+}
+
+void insertarAtras (palabra * P ,char * string , Nodo * puntero)
+{
+	//Creo mi nodo a partir del string
+	Nodo * nodo = crearNodo(string);
+	// siguiente de nodo es puntero
+	nodo->siguiente=puntero;
+	//Pregunto si el anterior de puntero es nulo, signfica que es la cabeza de la lista
+	if (!puntero->anterior)
+	{
+		//si es nulo mi nueva cabeza es mi nodo
+		P->subcadenas->cabeza = nodo;
+		nodo->anterior = NULL;
 	}
 	//Si no es nulo
-	else{
-		nodo->siguiente = lista->cabeza; 
-		lista->cabeza = nodo;
-		lista->largo = lista->largo + 1;
+	else
+	{
+		//El anterior de nodo va aser el anterior de puntero
+		nodo->anterior = puntero->anterior;
+		//Y el siguiente del anteriorr de nodo va a hacer nodo
+		nodo->anterior->siguiente =nodo;
 	}
+	//Ahora el anterior de puntero es nodo
+	puntero->anterior = nodo;
+	//Aumento el largo
+	P->subcadenas->largo = P->subcadenas->largo + 1;
+	//Libero memoria
+	//printf("L :New Chain in my lista: %s\n", puntero->cadena );
+	string=malloc(sizeof(char));
+	free(string);
+
+}
+
+//Vamos a confiar en diosito y decir que el string va a llegar sin problemas :C
+//Al fina si pudo llegar siempre sin problemas :-D, free();
+//Función que inserta un elemento de manera ordenada por su largo, falta insertarla por orden alfabetico
+//Entradas: Nueva cadena a insertar , lista enlazadas de subcadnas
+void insertar(palabra * P, char * string ,int largoString,Nodo * puntero)
+{
+	/*
+	if (puntero->cadena==P->subcadenas->cabeza->cadena){
+	printf("Cadena llego como : %s  \n",string );
+	printf("Largo cadena : %d \n",largoString );
+	if ((string[0]<puntero->cadena[0])==1)
+	{
+		printf("anterior\n");
+	}
+	else{printf("adelante\n");}
+	
+	printf("Insertar [%d] : subcadena : %s tamanoReal : %d tamanoLen  : %ld puntero : %s de largo %d"
+		,P->subcadenas->largo,string, largoString, strlen(string) ,puntero->cadena,puntero->largo);
+	printf(" == %d \n , siguiente : %p\n", mayorAlfabetico(string,largoString, puntero->cadena,puntero->largo,0),puntero->siguiente);*/
+	//printf("%s with large : %d V/S %s with large : %d = %d \n ",  string, largoString,puntero->cadena,puntero->largo,
+	//mayorAlfabetico(string,largoString, puntero->siguiente->cadena,puntero->siguiente->largo,0));
+
+	//Caso super especial, el primer elemento
+	if ((P->subcadenas->cabeza->largo == -1) && (P->subcadenas->cabeza->anterior == NULL)  && (strcmp(P->subcadenas->cabeza->cadena,"UNDERTALE") == 0))
+	{
+		//Como al primer elemento ya le tengo una memoria asignada, solo asigno
+		//Copio el string en en la cadena
+		strcpy(P->subcadenas->cabeza->cadena ,string);
+		//Asigno el largo de la cadena
+		P->subcadenas->cabeza->largo = largoString;
+		//Asigno el largo del nodo
+		P->subcadenas->largo = 1;
+		P->subcadenas->cabeza->siguiente = NULL;
+		P->subcadenas->cabeza->anterior  = NULL;
+	}
+	//Caso Borde : Ultimo elemento de la lista
+	//Si no existe un nodo siguiente , lo inserto ultimo o penultimo
+	else if (puntero->siguiente == NULL)
+	{
+		//Pregunto si tienen el mismo largo
+		if (largoString == puntero->largo)
+		{
+			//Si tienen el mismo largo
+			//Si es menor alfabeticamente, lo inserto atrás
+			if (mayorAlfabetico(string,largoString, puntero->cadena,puntero->largo,0)==1)
+			{
+				insertarAtras (P,string , puntero);
+				puntero = puntero->anterior;
+				//printf("New chain : %s\n",puntero->cadena );
+			}
+			else if (mayorAlfabetico(string,largoString,puntero->cadena,puntero->largo,0)==0)
+			{
+				insertarAdelante(P,string,puntero);
+				puntero = puntero->siguiente;
+				//printf("New chain : %s\n",puntero->cadena );
+			}
+		}
+		//Si no tienen el mismo largo
+		else if (largoString !=puntero->largo)
+		{
+			//lo inserto adelante
+			insertarAdelante(P,string,puntero);
+			puntero = puntero->siguiente;
+			//printf("New chain : %s\n",puntero->cadena );
+		}
+
+	}
+	//Caso mixto : Recursivo y borde
+	//Pregunto si tienen el mismo largo
+	else if (largoString == puntero->largo)
+	{
+		//Si es menor alfabeticamente
+		if (mayorAlfabetico(string,largoString, puntero->cadena,puntero->largo,0)==1)
+		{
+			//Lo inserto atrás del puntero actual
+			insertarAtras (P,string , puntero);
+			puntero = puntero->anterior;
+		}
+		//Si es mayor alfabeticamente****
+		else if (mayorAlfabetico(string,largoString,puntero->cadena,puntero->largo,0)==0)
+		{
+			//Pregunto si es mayor alfabeticamente que el siguiente elemento, y menor o igual numericamente que el siguiente 
+			if ((mayorAlfabetico(string,largoString, puntero->siguiente->cadena,puntero->siguiente->largo,0)==0) && largoString == puntero->siguiente->largo )
+			{
+				//Si es mayor alfabeticamente y menor numericamente que el siguiente elemento sigo recorriendo la lista 
+				puntero = puntero->siguiente ;
+				insertar(P,string ,largoString,puntero );
+			}
+			//Pregunto si es menor que el siguiente elemento
+			else
+			{
+				//Si es menor que el siguiente elemento pero mayor que el elemento actual, lo inserto adelante del puntero actual
+				insertarAdelante(P,string,puntero);
+				puntero = puntero->siguiente;
+				//printf("New chain : %s\n",puntero->cadena );
+			}
+		}
+	}
+	//Si no tiene el mismo largo y además el siguiente punteor tampoco es nulo
+	else
+	{
+		//Sigo recorriendo la lista
+		puntero = puntero->siguiente ;
+		insertar(P,string ,largoString,puntero );
+	}
+	
+
 }
 
 

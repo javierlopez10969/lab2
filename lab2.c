@@ -25,10 +25,12 @@ void menu ()
     //Arreglos
     int n1 ;
     char ** sopa = NULL ;
-    //bool para saber cual arreglo esoy utilizando
-    //true el primero , false el segundo
-    bool arreglo1= false;
-
+    //printf("ES mayor : %s %s = %d  \n","eje" ,"emp",mayorAlfabetico("eje",3,"emp",3,0));
+    //printf("ES mayor : %s %s = %d  \n","abedul" ,"aabedul",mayorAlfabetico("abedul",6,"aabedul",7,0));
+   	//printf("ES mayor : %s %s = %d  \n","aabedul","abedul" ,mayorAlfabetico("aabedul",7,"abedul",6,0));
+    //printf("%s > %s  : %d\n","aabe" , "aala","aabe" > "aala" ); //= 0
+    //printf("A < B  : %d\n",'a' < 'b' ); //= 1
+    //printf("A = B  : %d\n",'a' == 'b' ); //= 0
     //Entradas de archivos fijas
     char nombreDeArchivo [50];
     printf("Escriba el nombre de su archivo sopa sin extensión\n");
@@ -58,10 +60,11 @@ void menu ()
         {  
             imprimirPalabras (arregloPalabra , 0,n2);
             listaP * listaPalabras = (listaP*)malloc(sizeof (listaP));
+            listaPalabras->largo = n2;
             palabra * puntero = (palabra*)malloc(sizeof (palabra));
+            //palabra * puntero = NULL;
             listaPalabras->cabeza = puntero;
-            trabasijarArrregloToLista(arregloPalabra,listaPalabras,n2,0, puntero);
-            puntero = listaPalabras->cabeza;
+            trabasijarArrregloToLista(arregloPalabra,listaPalabras,listaPalabras->largo,0, puntero);
             busqueda(sopa ,n1 ,puntero);
 
             char nombreSalida [100] ;
@@ -69,7 +72,7 @@ void menu ()
             scanf("%s",nombreSalida);
             strcat(nombreSalida,".out");
             printf("Archivo de salida : %s \n" , nombreSalida);
-            escribirArchivo(sopa , n1 , arregloPalabra , n2 , nombreSalida);
+            escribirArchivo(listaPalabras,nombreSalida);
         }
         //Liberación de memoria dinamica
         free( arregloPalabra);

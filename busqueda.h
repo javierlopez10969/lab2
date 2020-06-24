@@ -3,7 +3,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-
 //función que verifica si un caracter se encuentra dentro de una cadena
 //Entrada : cadena , caracter , indice que se mueve por la cadena, numero de veces que se encuentra el caracter dentro de la cadena
 //SAlida : arreglo con los indices
@@ -31,7 +30,6 @@ void caracterInsideString(char * cadena ,char caracter,int i, int * arregloSalid
 		caracterInsideString(cadena,caracter,i+1,arregloSalida,coincidencias);
 	}
 }
-
 
 //Función que arregla string mal traspasados , ya que aveces por usar memoria dinámica llegaban algunas cadenas con basura de memoria
 //Supuesto: Se le pasan string que ya se saben que sus largos reales son incongruentes
@@ -61,6 +59,7 @@ char * limpiezaDeString(char * stringMalo,int tamanoReal)
 			nuevo[i] = caracter;
 			i++;
 		}
+		stringMalo = malloc(sizeof(char));
 		free(stringMalo);
 		//printf("Nuevo String :  %s \n",nuevo);
 		//Llamada recursiva :
@@ -68,7 +67,6 @@ char * limpiezaDeString(char * stringMalo,int tamanoReal)
 
 	}
 }
-
 
 //MODULO DE BUSQUEDA DE PALABRAS 
 //Función Recursiva
@@ -79,18 +77,20 @@ void substringR (char * string , char * subString ,int indice , int i, int largo
 {
 
 	//Caso Base, cuando ya me encuentro en el el largo total de lo que quería calcular
-	if (largo==0)
+	if (i == largo)
 	{
-		
+		//Devuelvo mi substring
+		;
 	}
 	//Casos Recursivos
 	else
 	{
 		subString[i] = string[indice];
 		//Llamo la recursión con un mi string y mi cadena manteniendolos, y sigo recorriendo ambos strings, reduciendo el largo total
-		substringR (string ,subString ,indice + 1,i+1,largo-1);
+		substringR (string ,subString ,indice + 1,i+1,largo);
 	}
 }
+
 
 //Función Iterativa
 //Función que genera un substring a partir de un string
@@ -111,187 +111,81 @@ char * substringI (char * string ,int indice, int largo)
 	return(substringaux);
 }
 
-//Vamos a confiar en diosito y decir que el string va a llegar sin problemas :C
-//Al fina si pudo llegar siempre sin problemas :-D, free();
-//Función que inserta fixeada
-//Entradas: Nueva cadena a insertar , lista enlazadas de subcadnas
-void insertar(palabra * P, char * string ,int largoString,Nodo * puntero )
-{
-	/*
-	if (puntero->cadena==P->subcadenas->cabeza->cadena)
-	{
-		printf("Insertar [%d] : subcadena : %s tamanoReal : %d tamanoLen  : %ld\n",P->subcadenas->largo,string, largoString, strlen(string) );
-	}
-	*/
-	//Ahora pregunto si mi subcadena tiene el mismo largo de mi actual string a agregar
-	if (puntero->largo==largoString)
-	{
-		//printf("Cadena llego como : %s  \n",string );
-		//Lo agrego al siguiente elemento de mi nodo
-		//printf("Largo cadena : %d \n",largoString );
-		//printf("Cadena en puntero : %s \n", puntero->cadena);
-		//printf("Largo de Cadena: %d \n",puntero->largo);
-		//En caso de que lo sea, reservo memoria de mi nodo
-		//Creación manual
-		//Nodo * nodo = malloc(sizeof (Nodo));
-		//Copiamos el string en el nodo
-		//strcpy(nodo->cadena,string);
-		//nodo->largo = largoString;
-		Nodo * nodo = crearNodo(string);
-		//Ahora mi nodo apunta al siguiente de mi puntero actual
-		nodo->siguiente = puntero->siguiente;
-		int i = 0; int vueltas = 0;
-		//printf("L : New Chain in my nodo : %s My string : %s \n", nodo->cadena ,string);
-		puntero->siguiente = nodo;
-		puntero= puntero->siguiente ; 
-		P->subcadenas->largo = P->subcadenas->largo + 1;
-		//printf("L :New Chain in my lista: %s\n", puntero->cadena );
-		string=malloc(sizeof(char));
-		free(string);
-	}
-	//Si no existe un nodo siguiente
-	else if (puntero->siguiente == NULL)
-	{
-		//printf("Cadena llego como : %s \n",string );
-		//Mi puntero siguiente será mi nuevo nodo
-		Nodo * nodo = crearNodo(string);
-		//printf("N: New Chain in my nodo : %s\n", nodo->cadena );
-		puntero->siguiente = nodo;
-		//Y ahora mi puntero es el siguiente
-		puntero = puntero->siguiente ;
-		//printf("N :New Chain in my lista : %s\n", puntero->cadena );
-		//Aumento mi largo de lista enlazada
-		P->subcadenas->largo = P->subcadenas->largo + 1;
-		string=malloc(sizeof(char));
-		free(string);
-	}	
 
-	//Si existe un sigueinte nodo sigo avanzando
-	else if (puntero->siguiente != NULL)
-	{
-		puntero = puntero->siguiente ;
-		insertar(P,string ,largoString,puntero );
-	}
-
-}
 //Función para generar todas las cadenas cuando la subcadena encontrada es mayo a 3
 //Entrada: palabra P , subcadena , largo de la subcadena
 //Salida: Void
 //Recursión : De cola, ya que no deja estados pendientes
-void generarSubcadenasMayores (palabra * P , char * subcadena , int largoSubcadena ,int indice, int casos)
+void generarSubcadenasR(palabra * P , char * subcadena , int largoSubcadena ,int indice, int casos)
 {
 	//Creo un substring del tamaño del indice, que se crea a partir de la subcadena, desde el número de casos que me encuentro hasta el largo del indice
 	char *  subString;
 	//Genero el substring dentro de la subcadena
-	subString = substringI (subcadena , casos,indice);
+	
+	//Llamada Iterativa
+	//subString = substringI (subcadena , casos,indice);
+
+	//Llamada Recursiva
+	subString = malloc(sizeof(char)*indice);
+	substringR(subcadena,subString,casos,0,indice);
+	//printf("Substring not fixed : %s\n", subString);
 	//Hacemos una limpieza del substring antes de insertarlo
 	subString=strcpy(subString ,limpiezaDeString(subString,indice)); 
-	//printf("Cadena : %s\n", subcadena);
 	//printf("Substring fixed : %s\n", subString);
-	//subcadenaAux  = limpiezaDeString(subcadenaAux, largoSubcadena);
-	//printf("Subcadena : %s , Subcadena Aux : %s \n",subcadena ,subcadenaAux );
+	//printf("Cadena : %s\n", subcadena);
 	//printf("indice : %d casos :%d largoR: %d largoLen : %ld subcadena  : %s \n",indice,casos,largoSubcadena,strlen(subcadena),subcadena);
+
 	//Caso Borde, cuando el indice es igual a largo de  la subcadena
 	if (indice == largoSubcadena)
 	{		
-		char * subStringFinal  ;
-		subStringFinal =  limpiezaDeString(subcadena,largoSubcadena);
+		//char * subStringFinal  ;
+		//subStringFinal =  limpiezaDeString(subcadena,largoSubcadena);
 		//Pregunto si mi cadena se encuentra en algun nodo de la lista
-		if (estaEnListaEnlazada(P->subcadenas,subStringFinal)==1)
+		//if (estaEnListaEnlazada(P->subcadenas,subStringFinal)==1)
+		if (estaEnListaEnlazada(P->subcadenas,subcadena)==1)	
 		{
 			//printf("Cadena : %s\n",subcadena );
 			//printf("No esta\n");
-			//Si el complete esta en -1 signfica que esta vacío el primer elemento de la lista
-			//Por lo cual la nueva cabeza es nuestro nuevo nodo
-			if (P->subcadenas->cabeza->largo == -1)
-			{
-				//Trasbasijo mi string en una el primer elemento
-				//Nueva Cabeza
-				strcpy(P->subcadenas->cabeza->cadena ,limpiezaDeString(subString,indice));
-				P->subcadenas->cabeza->largo = indice;
-				P->subcadenas->largo = 1;
-				P->subcadenas->cabeza->siguiente = NULL;
-				//printf("subcadena nueva en nodo :  %s\n",string );
-				//printf("Subcadena nueva en nodo :  %s\n",String );
-				//printf("Nuevo string nodo  : %s\n", nodo->cadena);
-				//printf("PUNTERO NULO, NUEVA CABEZA\n");
-				//printf("Nuevo string Cabeza  : %s Largo : %d siguiente = %p \n", P->subcadenas->cabeza->cadena , P->subcadenas->cabeza->largo,P->subcadenas->cabeza->siguiente);
-			}
-			//Si la cabeza no es nula
-			else
-			{
-				//printf("Substring  Final fixed : %s\n", subStringFinal);
-				insertar(P,subStringFinal,largoSubcadena,P->subcadenas->cabeza);	
-			}
+			//printf("Substring  Final fixed : %s\n", subStringFinal);
+			//insertar(P,subStringFinal,largoSubcadena,P->subcadenas->cabeza);
+			insertar(P,subcadena,largoSubcadena,P->subcadenas->cabeza);
 		}
-		else
-		{
-			free(subStringFinal);
-		}
+		//free(subStringFinal);
 
 	}
-
 	//Casos Recursivos
-	//Pregunto si mi cadena se encuentra en algun nodo de la lista y si mi cabeza esta vacía
-	else if (estaEnListaEnlazada(P->subcadenas,subString)==1 && (P->subcadenas->cabeza->largo == -1))
-	{
-		//printf("Substring fixed : %s\n", subString);
-		//Trasbasijo mi string en una el primer elemento
-		strcpy(P->subcadenas->cabeza->cadena ,limpiezaDeString(subString,indice));
-		P->subcadenas->cabeza->largo = indice;
-		P->subcadenas->largo = 1;
-		P->subcadenas->cabeza->siguiente = NULL;
-		//ASigno la nueva cabeza
-		//Nueva Cabeza
-		//Liberamos la cabeza anterior
-		//Y asignamos una nueva cabeza
-		//Nodo * nodo = crearNodo(String);
-		//printf("subcadena nueva en nodo :  %s\n",string );
-		//printf("Subcadena nueva en nodo :  %s\n",String );
-		//printf("Nuevo string nodo  : %s\n", nodo->cadena);
-		//printf("PUNTERO NULO, NUEVA CABEZA\n");
-		//printf("Nuevo string Cabeza  : %s Largo : %d siguiente = %p \n", P->subcadenas->cabeza->cadena , P->subcadenas->cabeza->largo,P->subcadenas->cabeza->siguiente);
-		//Si mi cabeza no esta vacía lo inserto de manera natural
-		//free(subString);
+
+	else{ 
+
+		//Si no se encuentra pero ya hay un elemento en la cabeza
+		if (estaEnListaEnlazada(P->subcadenas,subString)==1)
+		{
+			//printf("Substring fixed : %s\n", subString);
+			insertar(P,subString,indice,P->subcadenas->cabeza);
+			//free(subString);
+		}
+		//Llamada Recursiva
+		//Casos Recursivos
+		//Formula de cuantas subcadenas posibles hay dentro de una cadena
+		//por ejemplo subcadenas de 3 caracteres en una cadena de 6
+		//...---
+		//-...--
+		//--...-
+		//---...
+		//6-(3-1) = 4 , 4 posibles subcadenas
+		//siendo la formula largoCadena-(tamañosubcadenas-1)
+		//Si el próximo caso es igual al largo de la subcadena, significa que es el último caso
 		if (casos+1 == largoSubcadena-(indice-1))
 		{
 			//Sigo Recorriendo recursivamente la cadena, reinicio los casos y paso al siguiente indice
-			generarSubcadenasMayores (P ,subcadena ,largoSubcadena, indice+1,0);
+			generarSubcadenasR (P ,subcadena ,largoSubcadena, indice+1,0);
 		}
 		else if (casos+1 < largoSubcadena-(indice-1))
 		{
 			//Sigo Recorriendo recursivamente la cadena, mantengo el indice y paso al sigueinte caso
-			generarSubcadenasMayores (P ,subcadena ,largoSubcadena,indice,casos+1);
+			generarSubcadenasR (P ,subcadena ,largoSubcadena,indice,casos+1);
 		}
 	}
-	//Si no se encuentra pero ya hay un elemento en la cabeza
-	else if (estaEnListaEnlazada(P->subcadenas,subString)==1)
-	{
-		//printf("Substring fixed : %s\n", subString);
-		insertar(P,subString,indice,P->subcadenas->cabeza);
-		//free(subString);
-		if (casos+1 == largoSubcadena-(indice-1))
-		{
-			//Sigo Recorriendo recursivamente la cadena, reinicio los casos y paso al siguiente indice
-			generarSubcadenasMayores (P ,subcadena ,largoSubcadena, indice+1,0);
-		}
-		else if (casos+1 < largoSubcadena-(indice-1))
-		{
-			//Sigo Recorriendo recursivamente la cadena, mantengo el indice y paso al sigueinte caso
-			generarSubcadenasMayores (P ,subcadena ,largoSubcadena,indice,casos+1);
-		}
-	}
-
-	//Casos Recursivos
-	//Formula de cuantas subcadenas posibles hay dentro de una cadena
-	//por ejemplo subcadenas de 3 caracteres en una cadena de 6
-	//...---
-	//-...--
-	//--...-
-	//---...
-	//6-(3-1) = 4 , 4 posibles subcadenas
-	//siendo la formula largoCadena-(tamañosubcadenas-1)
-	//Si el próximo caso es igual al largo de la subcadena, significa que es el último caso
 }
 
 //función generadora de subcadenas dentro de una lista enlazafa
@@ -303,23 +197,9 @@ void generarSubcadenas(palabra * P,char * subcadena, int largoSubcadena)
 	char * newString ;
 	newString = limpiezaDeString(subcadena,largoSubcadena);
 	//printf("Subcadena : %s LargoR : %d Largo Len : %ld\n ",newString,largoSubcadena,strlen(subcadena));
-	//Preguntamos si la subcadena encontrada es igual a 3
-	if (largoSubcadena == 3)
-	{
-		//En Caso de serlo pregunto si esta subcadena no se encuentra en la lista enlazada
-		if (estaEnListaEnlazada(P->subcadenas ,newString)== 1)
-		{
-			//En caso de no encontrarse, la agrego a mi lista enlazada
-			insertarAlInicio(P->subcadenas,newString);
-		}
-	}
-	//De caso contrario, que el largo de la subcadena encontrada sea mayor a 3, genero todas las subcadenas posibles con ese largo, y pregunto si cada una se encuentra dentro
-	//De la subcadena
-	else if (largoSubcadena > 3)
-	{
-		//printf("1\n");
-		generarSubcadenasMayores(P,newString,largoSubcadena,3,0);
-	}
+	//newString= malloc(sizeof(char));
+	//free(newString);
+	generarSubcadenasR(P,newString,largoSubcadena,3,0);
 }
 
 //Función que recorre la sopa de arriba hacia abajo buscando una subcadena en común
@@ -330,34 +210,34 @@ void generarSubcadenas(palabra * P,char * subcadena, int largoSubcadena)
 void buscarSubcadenasV(char ** sopa , int n , int i , int j ,int  indiceP , palabra * P , char * subcadena, int * largoSub)
 {
 	//Primero me muevo de arriba hacia abajo
-	//Caso borde de que no puedo seguir bajando
+	//Caso borde
+	//No puedo seguir bajando, ya que llege o al tope de la matriz o al tope de mi palabra
 	if (i+1 == n || indiceP == P->largoPalabra)
 	{
+		*largoSub = *largoSub-1;
 		//devuelvo subcadena
 		//printf("Largo : %d\n", *largoSub );
 		//printf("Subcadena : %s de %s\n",subcadena ,P->palabra);
-		*largoSub = *largoSub-1;
 	}
-	//Si puedo bajar
-	// && indiceP+1 < P->largoPalabra
+	//Casos Recursivos
 	else if (i < n)
 	{
+		//Aigno al caracter la posicion donde mi encuentro en la sopa
 		char caracter = sopa[i][j] ;
 		//printf("CaracterS : %c\n",sopa[i][j]);
 		//printf("CaracterP : %c\n",P->palabra[indiceP]);
-
-		//pregunto si el siguiente elemento de la lista coincide con el de la palabra
+		//pregunto si el caracter actual coincide con el caracter actuald e mi palabra
 		if (caracter == P->palabra[indiceP])
 		{
+			//Si coinciden, la subcadena en su indice se asgina
 			subcadena[*largoSub-1]= caracter ;
 			//Aumento el largo de la subcadena 
 			*largoSub = *largoSub + 1;
-			//printf("Largo Eskeresito: %d\n", *largoSub );
-			//Si coinciden, la subcadena en su indice se asgina
+			//printf("Largo : %d\n", *largoSub );
 			//Hago el llamado recursivo hacia arriba y en orden
 			buscarSubcadenasV(sopa,n,i+1,j,indiceP+1 ,P,subcadena,largoSub);
 		}
-		//En caso de que no coincidan
+		//En caso de que no coincidan, termino la recursión
 		else if (caracter != P->palabra[indiceP])
 		{
 			*largoSub = *largoSub-1;
@@ -404,7 +284,6 @@ void buscarSubcadenasH(char ** sopa , int n , int i , int j ,  int  indiceP , pa
 			//devuelvola cadena
 		}
 	}
-
 }
 
 //Función que recorre la sopa y va añadiendo las disntintas subcadenas
@@ -435,11 +314,12 @@ void busquedaDeSubcadenas(char ** sopa ,int n ,int i, int j , palabra * P)
 		while (indice < Lcoincidencias)
 		{
 			//printf("Indice coincidente :%d , caracter coincidente : %c \n",coincidencias[indice] ,caracter);
-			//Declaramos una subcadena de tamaño 0
+			//Declaramos una subcadena de tamaño 1
 			int largoSub = 1;
 			char * subcadena = (char*)malloc(sizeof(char)*largoSub);
-			//Recorro la sopa hacia abajo con la palabra en orden
+			//Busqueda Vertical
 			buscarSubcadenasV(sopa,n,i,j,coincidencias[indice],P,subcadena,&largoSub);
+			//Pregunto si la subcadena es de un minimo de 3
 			if (largoSub >= 3)
 			{
 				//printf("LargoR : %d LargoLen : %ld \n", largoSub ,strlen(subcadena));
@@ -448,16 +328,16 @@ void busquedaDeSubcadenas(char ** sopa ,int n ,int i, int j , palabra * P)
 				//char * temp = limpiezaDeString(subcadena,largoSub);
 				//printf("temp1  :%s\n",temp);
 				generarSubcadenas(P,subcadena,largoSub);
+				//free(subcadena);
 			}
-			else
-			{
-				free(subcadena);
-			}
+			free(subcadena);
 			//Recorro la sopa hacia la derecha con la palabra en orden
 			//Reinicializamos la subcadena
 			largoSub = 1;
 			char * subcadena2= (char*)malloc(sizeof(char)*largoSub);
+			//Busqueda Horizontal
 			buscarSubcadenasH(sopa,n,i,j,coincidencias[indice],P,subcadena2,&largoSub);
+			//Pregunto si la subcadena es de un minimo de 3
 			if (largoSub >= 3)
 			{
 				//printf("LargoR : %d LargoLen : %ld \n", largoSub ,strlen(subcadena));
@@ -466,25 +346,25 @@ void busquedaDeSubcadenas(char ** sopa ,int n ,int i, int j , palabra * P)
 				//char * temp2 = limpiezaDeString(subcadena2,largoSub);
 				//printf("temp2  :%s\n",temp2);
 				generarSubcadenas(P,subcadena2,largoSub);
+				//free(subcadena2);
 			}
-			else
-			{
-				free(subcadena2);	
-			}
-			
+			free(subcadena2);	
 			indice ++;
 		}
-
 	}
 	//Libero la memoria dinámica
 	free(coincidencias);
 	//sigo recorriendo la sopa
+
+	//Caso Borde
 	//Si ambos siguientes indices son iguales al largo de la sopa, paro de hacer recursión e imprimo los elementos hayados
 	if(i+1==n && j+1 == n)
 	{
 		imprimirHayazgos(P);
 	}
-	//si mi siguiente indice i es igual a n pero mi inidice j sige siendo menot a n
+
+	//Casos Recursivos
+	//si mi siguiente indice i es igual a n pero mi inidice j sige siendo menor a n
 	else if (i+1 < n && j+1 == n)
 	{
 		//reinicio j y aumento i
@@ -500,27 +380,27 @@ void busquedaDeSubcadenas(char ** sopa ,int n ,int i, int j , palabra * P)
 	}
 
 }
+
 //función que se encarga de ejecutar la busqueda
 //ENTRADA : Sopa de letras , LArgo N de la sopa , lista simplemente enlazada con palabras, palabra puntero
 //SALIDAS : Estructura con una 
 void busqueda (char ** sopa ,int n1 ,palabra * P)
 {
-	//Casos Base
+	printf("Palabra : %s\n", P->palabra);
+	printf("--------------------------------------------------------\n");
+	busquedaDeSubcadenas(sopa,n1,0,0,P);
+
+	//Casos Base : Ya no existe un siguiente palabra
 	if (!P->siguiente)
 	{
 		printf("DONE\n");
 	}
-	//Casos Recursivos
+	//Casos Recursivos : Si existe un siguiente
 	else if (P->siguiente)
 	{
-		printf("--------------------------------------------------------\n");
-		printf("Palabra : %s\n", P->palabra);
-		char * temp = malloc(sizeof(char)*P->largoPalabra);
-		//strcpy(temp,P->palabra); 
-		//generarSubcadenas(P,temp,P->largoPalabra);
-		//imprimirHayazgos(P);
-		busquedaDeSubcadenas(sopa,n1,0,0,P);
 		//Solo si el i+1 no es igual al largo
+		//Solo si hay un sigiente elemento sigo avanzando
 		busqueda(sopa,n1,P->siguiente);
+		
 	}
 }

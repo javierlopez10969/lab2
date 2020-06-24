@@ -6,6 +6,7 @@
 //Modulo de constantes , constante abecedario
 char  abcdario[26] = "abcdefghijklmnopqrstuwvxyz";
 
+
 //MODULO DE FUNCIONES
 
 //Función que se encarga de imprimir las variables dentro de la estructura
@@ -69,23 +70,67 @@ void imprimirSopa(char ** arreglo , int n)
     }
 }
 
+
+//Función que imprime todos los hayazgos dentro
+//Entrada : Nodo * puntero , iterador del largo
+void escribirHayazgosR(Lista * lista ,Nodo * puntero,int i ,FILE * archivo)
+{
+    //Caso Base
+    if(i == lista->largo)
+    {
+        //Se acaba la recursión
+    }
+    //Caso recursivo
+    else if(i < lista->largo)
+    {
+        //Imprimo la subcadena
+        fprintf(archivo,"%s\n",puntero->cadena);
+        //Aumento el iterador
+        //Solo si el punteor siguiente existe
+        if (puntero->siguiente != NULL)
+        {
+            //Sigo avanzando en la lsita enlazada
+            puntero = puntero->siguiente ;
+            escribirHayazgosR(lista,puntero,i+1,archivo);
+        }
+    }
+
+}
+
+//Función que imprime todos las subcadenas encontradas de una palabra
+//Entrada : Lista Enlazada
+//Salida : Todos sus elementos
+//Función Envoltorio
+void escribirHayazgos(palabra * P, FILE * archivo)
+{
+    //printf("Palabra : %s\n", P->palabra);
+    Lista * lista = P->subcadenas;   
+    fprintf(archivo,"%s : %d \n",P->palabra,P->subcadenas->largo);
+    escribirHayazgosR(lista,lista->cabeza,0,archivo);
+    //Casos Base : Ya no existe un siguiente palabra
+    if (P->siguiente == NULL)
+    {
+        printf("DONE\n");
+    }
+    //Casos Recursivos : Si existe un siguiente
+    else if (P->siguiente != NULL)
+    {
+        escribirHayazgos(P->siguiente,archivo);
+    }
+}
+
 //Escribir archivo de salida con las posiciones y las caddenas encontradas
 //Entrada : Arreglo matriz sopa de letras , tamaño de la sopa de letras , arreglo de estrucutras , su tamaño . nombre del archivo de salida
 //SALIDA : un entero 0 en caso de que la escritura fue realizada con exito
-int escribirArchivo(char ** sopa , int n , palabra * arregloPalabra , int n2 , char * nombreSalida)
+int escribirArchivo(listaP * P , char * nombreSalida)
 {
     FILE * archivo = fopen (nombreSalida , "wt");
-    fprintf (archivo , "\n");
-    int i =0 ;
-    while (i < n2)
-    {
-        palabra elemento = arregloPalabra[i];
-        i++;
-    }
+    escribirHayazgos(P->cabeza, archivo);
     printf("ESTADO :ESCRITO\n");
     fclose (archivo); 
     return 0 ;
 }
+
 
 //LEER ARCHIVO de palabras y entregarselo a una lista de estructuras
 //Entrada : Dirección de memoria del arreglo de Estructruas , nombre del archivo de palabras , y direccion de memoria de el tamaño del arreglo
@@ -183,15 +228,15 @@ bool leerArchivoPalabra(palabra ** arreglo , char * nombre, int * n)
 //Función trasbasijar de un arreglo dinámico a una lista enlazada simple
 void trabasijarArrregloToLista(palabra * arreglo , listaP * P, int n, int i,palabra * puntero)
 {
-    //Le asigno memoria a la lista P
-    P = (listaP*)malloc(sizeof (listaP));
-    P->largo = n ;
+    
     //Lege al final de mi arreglo
     if (i == n)
     {
+
         //Asigno el nodo siguiente
-        puntero->siguiente = NULL;
-        puntero = P->cabeza;
+        //puntero->siguiente =NULL;
+        //puntero = NULL ;
+        //free(puntero);
         /*
         printf("Lista Enlazada cabeza: %s\n",P->cabeza->palabra );
         printf("Lista Enlazada : %s\n",puntero->palabra );
@@ -203,6 +248,10 @@ void trabasijarArrregloToLista(palabra * arreglo , listaP * P, int n, int i,pala
     }
     if (i < n)
     {
+        //printf("i : %d \n",i );
+        //printf("%s\n",arreglo[i].palabra );
+        //Asigno memoria a mi puntero
+        //puntero = (palabra*)malloc(sizeof (palabra));
         //printf("Arreglo Palabra : %s\n",arreglo[i].palabra );
         //Asigno palabra
         strcpy(puntero->palabra , arreglo[i].palabra);
@@ -216,17 +265,25 @@ void trabasijarArrregloToLista(palabra * arreglo , listaP * P, int n, int i,pala
         //Al primer elemento de subcadnas le apunto a null
         puntero->subcadenas->cabeza = malloc(sizeof (Nodo)); ;
         puntero->subcadenas->cabeza->largo = -1;
+        strcpy(puntero->subcadenas->cabeza->cadena ,"UNDERTALE");
+        puntero->subcadenas->cabeza->anterior = NULL;
         //Asigno el largo a subcadenas que parte en 0
         puntero->subcadenas->largo = 0;
-        //Asigno memoria al siguiente elemento de mi lista
-        puntero->siguiente = (palabra*)malloc(sizeof (palabra));
-        //Sigo avanzando en ambas listas
-        puntero = puntero->siguiente;
         i++;
-        trabasijarArrregloToLista(arreglo,P,n,i,puntero);
+        if (i+1 > n)
+        {
+            //Si ya termine mi siguiente elemento es nulo
+            puntero->siguiente =NULL;
+            trabasijarArrregloToLista(arreglo,P,n,i,puntero);
+        }
+        else
+        {
+            //Asigno memoria al siguiente elemento de mi lista
+            puntero->siguiente = (palabra*)malloc(sizeof (palabra));
+            trabasijarArrregloToLista(arreglo,P,n,i,puntero->siguiente);
+
+        }
     }
-
-
 }
 
 //LEER ARCHIVO de sopas
@@ -251,7 +308,7 @@ bool leerArchivoSopa(char *** arreglo , char * nombre, int * n)
     //obtengo la primer linea con el tamaño
     fgets(linea, 1000,archivo );
     tamano = atoi(linea) ;
-    //arregloa auxiliar para ir almacenando cada dato
+    //arregloa auxiliar dinámico para ir almacenando cada dato
     char **arregloaux=(char **) malloc(tamano*sizeof(char *)); //multiplicadas por n que serian las "filas"
     
     //Asignamos memoria:
